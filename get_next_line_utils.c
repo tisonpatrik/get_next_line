@@ -11,106 +11,104 @@
 /* ************************************************************************** */
 
 #include "get_next_line.h"
-#include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 
-t_list	*ft_find_last_node(t_list *list)
+char	*concat(char *buff, char *addme, size_t s_buff, size_t s_addme)
 {
-	if (NULL == list)
+	char	*newbuff;	
+	int		offset;
+
+	offset = s_buff;
+	newbuff = malloc(s_buff + s_addme);
+	if (!newbuff)
 		return (NULL);
-	while (list->next)
-		list = list->next;
-	return (list);
+	while (s_buff--)
+		newbuff[s_buff] = buff[s_buff];
+	while (s_addme--)
+		newbuff[offset + s_addme] = addme[s_addme];
+	free(buff);
+	return (newbuff);
 }
 
-void	append(t_list **list, char *buf)
+int	has_next_line(t_buffer *buffer)
 {
-	t_list	*new_node;
-	t_list	*last_node;
+	int	pos;
 
-	last_node = ft_find_last_node(*list);
-	new_node = malloc(sizeof(t_list));
-	if (NULL == new_node)
-		return ;
-	if (NULL == last_node)
-		*list = new_node;
-	else
-		last_node->next = new_node;
-	new_node->str_buf = buf;
-	new_node->next = NULL;
+	pos = 0;
+	while (pos < buffer->buffer_size)
+		if (buffer->buffer_data[pos++] == '\n')
+			return (pos - 1);
+	return (-1);
 }
 
-void	ft_dealloc(t_list **list, t_list *clean_node, char *buf)
+char	*update_buffer(char *buff, int s_buff, int pos)
 {
-	t_list	*tmp;
+	char	*newbuff;
+	int		it1;
+	int		it2;
 
-	if (NULL == *list)
-		return ;
-	while (*list)
-	{
-		tmp = (*list)->next;
-		free((*list)->str_buf);
-		free(*list);
-		*list = tmp;
-	}
-	*list = NULL;
-	if (clean_node->str_buf[0])
-		*list = clean_node;
-	else
-	{
-		free(buf);
-		free(clean_node);
-	}
+	it1 = 0;
+	it2 = pos + 1;
+	newbuff = malloc(s_buff - pos - 1);
+	if (!newbuff)
+		return (NULL);
+	while (it2 < s_buff)
+		newbuff[it1++] = buff[it2++];
+	free(buff);
+	return (newbuff);
 }
 
-void	polish_list(t_list **list)
+char	*extract_line(char *buff, char **next_line, int s_buff, int pos)
 {
-	t_list	*last_node;
-	t_list	*clean_node;
 	int		i;
-	int		k;
-	char	*buf;
+	char	*newbuff;
 
-	buf = malloc(BUFFER_SIZE + 1);
-	clean_node = malloc(sizeof(t_list));
-	if (NULL == buf || NULL == clean_node)
-		return ;
-	last_node = ft_find_last_node(*list);
 	i = 0;
-	k = 0;
-	while (last_node->str_buf[i] && last_node->str_buf[i] != '\n')
-		++i;
-	while (last_node->str_buf[i] && last_node->str_buf[++i])
-		buf[k++] = last_node->str_buf[i];
-	buf[k] = '\0';
-	clean_node->str_buf = buf;
-	clean_node->next = NULL;
-	ft_dealloc(list, clean_node, buf);
+	if (!buff || !next_line || pos >= s_buff)
+		return (NULL);
+	*next_line = malloc(pos + 2);
+	if (!(*next_line))
+		return (NULL);
+	while (i <= pos)
+	{
+		(*next_line)[i] = buff[i];
+		i++;
+	}
+	(*next_line)[i] = '\0';
+	if (s_buff - pos - 1 <= 0)
+	{
+		free(buff);
+		return (NULL);
+	}
+	newbuff = update_buffer(buff, s_buff, pos);
+	if (!newbuff)
+		free(*next_line);
+	return (newbuff);
 }
 
-void	ft_copy_str(t_list *list, char *str)
+int	read_next(int file_descriptor, t_buffer *b, char **new_line)
 {
-	int	i;
-	int	k;
+	char	*tmp;
+	int		bytes_read;
 
-	if (NULL == list)
-		return ;
-	k = 0;
-	while (list)
+	tmp = malloc(BUFFER_SIZE);
+	bytes_read = read(file_descriptor, tmp, BUFFER_SIZE);
+	if (bytes_read < 0 || (bytes_read == 0 && b->buffer_size == 0) || !tmp)
 	{
-		i = 0;
-		while (list->str_buf[i])
-		{
-			if (list->str_buf[i] == '\n')
-			{
-				str[k++] = '\n';
-				str[k] = '\0';
-				return ;
-			}
-			str[k++] = list->str_buf[i++];
-		}
-		list = list->next;
+		b->buffer_size = 0;
+		free(tmp);
+		return (0);
 	}
-	str[k] = '\0';
+	else if (bytes_read == 0)
+	{
+		b->buffer_data = extract_line(b->buffer_data, new_line, b->buffer_size, b->buffer_size - 1);
+		b->buffer_size = 0;
+		free(tmp);
+		return (0);
+	}
+	b->buffer_data = concat(b->buffer_data, tmp, b->buffer_size, bytes_read);
+	b->buffer_size = b->buffer_size + bytes_read;
+	free(tmp);
+	return (1);
 }

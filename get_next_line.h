@@ -14,16 +14,20 @@
 # define GET_NEXT_LINE_H
 
 # ifndef BUFFER_SIZE
-#  define BUFFER_SIZE 10
-
+#  define BUFFER_SIZE 1
+# endif
+# ifndef MAX_FD
+#  define MAX_FD 1024
 # endif
 
-typedef struct s_list
+typedef struct s_buffer
 {
-	char			*str_buf;
-	struct s_list	*next;
-}					t_list;
+	int		buffer_size;
+	char	*buffer_data;
+}	t_buffer;
 
-char				*get_next_line(int fd);
+// Global buffer array for managing multiple file descriptors
+extern t_buffer g_file_buffers[MAX_FD];
 
+char	*get_next_line(const int file_descriptor);
 #endif
