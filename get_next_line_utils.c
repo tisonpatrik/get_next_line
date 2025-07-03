@@ -6,30 +6,13 @@
 /*   By: patrik <patrik@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/03 16:31:58 by ptison            #+#    #+#             */
-/*   Updated: 2025/07/03 20:38:44 by patrik           ###   ########.fr       */
+/*   Updated: 2025/07/03 22:10:23 by patrik           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 #include <stdlib.h>
 #include <unistd.h>
-
-char	*concat(char *buff, char *addme, size_t s_buff, size_t s_addme)
-{
-	char	*newbuff;	
-	int		offset;
-
-	offset = s_buff;
-	newbuff = malloc(s_buff + s_addme);
-	if (!newbuff)
-		return (NULL);
-	while (s_buff--)
-		newbuff[s_buff] = buff[s_buff];
-	while (s_addme--)
-		newbuff[offset + s_addme] = addme[s_addme];
-	free(buff);
-	return (newbuff);
-}
 
 int	has_next_line(t_buffer *buffer)
 {
@@ -84,6 +67,23 @@ char	*extract_line(char *buff, char **next_line, int s_buff, int pos)
 	newbuff = update_buffer(buff, s_buff, pos);
 	if (!newbuff)
 		free(*next_line);
+	return (newbuff);
+}
+
+char	*concat(char *buff, char *addme, size_t s_buff, size_t s_addme)
+{
+	char	*newbuff;	
+	int		offset;
+
+	offset = s_buff;
+	newbuff = malloc(s_buff + s_addme);
+	if (!newbuff)
+		return (NULL);
+	while (s_buff--)
+		newbuff[s_buff] = buff[s_buff];
+	while (s_addme--)
+		newbuff[offset + s_addme] = addme[s_addme];
+	free(buff);
 	return (newbuff);
 }
 
