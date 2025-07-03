@@ -6,7 +6,7 @@
 /*   By: patrik <patrik@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/03 16:31:58 by ptison            #+#    #+#             */
-/*   Updated: 2025/07/03 22:10:23 by patrik           ###   ########.fr       */
+/*   Updated: 2025/07/03 23:18:30 by patrik           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,14 +14,17 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-int	has_next_line(t_buffer *buffer)
+int	get_newline_index(t_buffer *input_buffer)
 {
-	int	pos;
+	int	index;
 
-	pos = 0;
-	while (pos < buffer->buffer_size)
-		if (buffer->buffer_data[pos++] == '\n')
-			return (pos - 1);
+	index = 0;
+	while (index < input_buffer->size)
+	{
+		if (input_buffer->data[index] == '\n')
+			return (index);
+		index++;
+	}
 	return (-1);
 }
 
@@ -72,7 +75,7 @@ char	*extract_line(char *buff, char **next_line, int s_buff, int pos)
 
 char	*concat(char *buff, char *addme, size_t s_buff, size_t s_addme)
 {
-	char	*newbuff;	
+	char	*newbuff;
 	int		offset;
 
 	offset = s_buff;
@@ -94,22 +97,21 @@ int	read_next(int file_descriptor, t_buffer *b, char **new_line)
 
 	tmp = malloc(BUFFER_SIZE);
 	bytes_read = read(file_descriptor, tmp, BUFFER_SIZE);
-	if (bytes_read < 0 || (bytes_read == 0 && b->buffer_size == 0) || !tmp)
+	if (bytes_read < 0 || (bytes_read == 0 && b->size == 0) || !tmp)
 	{
-		b->buffer_size = 0;
+		b->size = 0;
 		free(tmp);
 		return (0);
 	}
 	else if (bytes_read == 0)
 	{
-		b->buffer_data = extract_line(b->buffer_data, new_line, b->buffer_size,
-				b->buffer_size - 1);
-		b->buffer_size = 0;
+		b->data = extract_line(b->data, new_line, b->size, b->size - 1);
+		b->size = 0;
 		free(tmp);
 		return (0);
 	}
-	b->buffer_data = concat(b->buffer_data, tmp, b->buffer_size, bytes_read);
-	b->buffer_size = b->buffer_size + bytes_read;
+	b->data = concat(b->data, tmp, b->size, bytes_read);
+	b->size = b->size + bytes_read;
 	free(tmp);
 	return (1);
 }

@@ -6,7 +6,7 @@
 /*   By: patrik <patrik@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/03 16:32:06 by ptison            #+#    #+#             */
-/*   Updated: 2025/07/03 21:59:14 by patrik           ###   ########.fr       */
+/*   Updated: 2025/07/03 23:18:30 by patrik           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,9 +19,9 @@
 
 typedef struct s_buffer
 {
-	int		buffer_size;
-	char	*buffer_data;
-}	t_buffer;
+	int		size;
+	char	*data;
+}			t_buffer;
 
-char	*get_next_line(const int file_descriptor);
+char		*get_next_line(const int file_descriptor);
 #endif
