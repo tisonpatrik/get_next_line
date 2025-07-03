@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   get_next_line.c                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: patrik <patrik@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/03 20:33:06 by patrik            #+#    #+#             */
+/*   Updated: 2025/07/03 20:38:47 by patrik           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include <stdlib.h>
 #include <string.h>
 #include <fcntl.h>
@@ -12,7 +24,7 @@ int		read_next(int file_descriptor, t_buffer *b, char **new_line);
 // Global buffer array definition
 // Stores buffered data for each file descriptor (up to MAX_FD)
 // Each file descriptor gets its own buffer to maintain state between calls
-t_buffer g_file_buffers[MAX_FD] = {0};
+t_buffer	g_file_buffers[MAX_FD] = {0};
 
 char	*get_next_line(int file_descriptor)
 {
@@ -28,11 +40,15 @@ char	*get_next_line(int file_descriptor)
 		new_line = NULL;
 		if (newline_position >= 0)
 		{
-			g_file_buffers[file_descriptor].buffer_data = extract_line(g_file_buffers[file_descriptor].buffer_data, &new_line, g_file_buffers[file_descriptor].buffer_size, newline_position);
+			g_file_buffers[file_descriptor].buffer_data = extract_line(
+					g_file_buffers[file_descriptor].buffer_data, &new_line,
+					g_file_buffers[file_descriptor].buffer_size,
+					newline_position);
 			g_file_buffers[file_descriptor].buffer_size -= newline_position + 1;
 			break ;
 		}
-		if (!read_next(file_descriptor, &g_file_buffers[file_descriptor], &new_line))
+		if (!read_next(file_descriptor, &g_file_buffers[file_descriptor],
+				&new_line))
 			break ;
 	}
 	return (new_line);

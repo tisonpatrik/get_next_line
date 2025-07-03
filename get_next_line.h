@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line.h                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ptison <ptison@student.42.fr>              +#+  +:+       +#+        */
+/*   By: patrik <patrik@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/03 16:32:06 by ptison            #+#    #+#             */
-/*   Updated: 2025/07/03 16:32:36 by ptison           ###   ########.fr       */
+/*   Updated: 2025/07/03 20:38:45 by patrik           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ typedef struct s_buffer
 }	t_buffer;
 
 // Global buffer array for managing multiple file descriptors
-extern t_buffer g_file_buffers[MAX_FD];
+extern t_buffer	g_file_buffers[MAX_FD];
 
 char	*get_next_line(const int file_descriptor);
 #endif

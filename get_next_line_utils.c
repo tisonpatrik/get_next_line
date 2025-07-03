@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line_utils.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ptison <ptison@student.42.fr>              +#+  +:+       +#+        */
+/*   By: patrik <patrik@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/03 16:31:58 by ptison            #+#    #+#             */
-/*   Updated: 2025/07/03 16:32:52 by ptison           ###   ########.fr       */
+/*   Updated: 2025/07/03 20:38:44 by patrik           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,7 +102,8 @@ int	read_next(int file_descriptor, t_buffer *b, char **new_line)
 	}
 	else if (bytes_read == 0)
 	{
-		b->buffer_data = extract_line(b->buffer_data, new_line, b->buffer_size, b->buffer_size - 1);
+		b->buffer_data = extract_line(b->buffer_data, new_line, b->buffer_size,
+				b->buffer_size - 1);
 		b->buffer_size = 0;
 		free(tmp);
 		return (0);
